@@ -2386,7 +2386,27 @@ Resources:
               - 'ecr:InitiateLayerUpload'
               - 'ecr:PutImage'
               - 'ecr:UploadLayerPart'
-
+  DeploymentDockerRegistry:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: iloan/deploy/ansible
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: AllowPushPull
+            Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt 'AgentIAMRole.Arn'
+            Action:
+              - 'ecr:BatchCheckLayerAvailability'
+              - 'ecr:BatchGetImage'
+              - 'ecr:CompleteLayerUpload'
+              - 'ecr:GetDownloadUrlForLayer'
+              - 'ecr:InitiateLayerUpload'
+              - 'ecr:PutImage'
+              - 'ecr:UploadLayerPart'
 Outputs:
   TemplateID:
     Description: 'cloudonaut.io template id.'
@@ -2427,3 +2447,8 @@ Outputs:
     Value: !Ref 'FrontendDockerRegistry'
     Export:
       Name: !Sub '${AWS::StackName}-FrontendDockerRegistry'
+  DeploymentDockerRegistryName:
+    Description: ''
+    Value: !Ref 'DeploymentDockerRegistry'
+    Export:
+      Name: !Sub '${AWS::StackName}-DeploymentDockerRegistry'
