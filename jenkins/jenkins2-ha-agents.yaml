@@ -536,6 +536,7 @@ Resources:
       Protocol: HTTP
   MasterELBListenerHTTPS:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    DeletionPolicy: Retain
     Properties:
       DefaultActions:
       - TargetGroupArn: !Ref MasterELBTargetGroup
@@ -2388,6 +2389,7 @@ Resources:
               - 'ecr:UploadLayerPart'
   DeploymentDockerRegistry:
     Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
     Properties:
       RepositoryName: iloan/deploy/ansible
       RepositoryPolicyText:
@@ -2447,8 +2449,3 @@ Outputs:
     Value: !Ref 'FrontendDockerRegistry'
     Export:
       Name: !Sub '${AWS::StackName}-FrontendDockerRegistry'
-  DeploymentDockerRegistryName:
-    Description: ''
-    Value: !Ref 'DeploymentDockerRegistry'
-    Export:
-      Name: !Sub '${AWS::StackName}-DeploymentDockerRegistry'
