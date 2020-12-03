@@ -67,6 +67,10 @@ Metadata:
       Parameters:
       - HttpIngressCidrAllowed
       - SshIngressCidrAllowed
+    - Label:
+        default: 'ECR'
+      Parameters:
+      - ECRName
 Parameters:
   ParentVPCStack:
     Description: 'Stack name of parent VPC stack based on vpc/vpc-*azs.yaml template.'
@@ -230,6 +234,9 @@ Parameters:
     Description: 'A CIDR range to allow access to Jenkins via SSH (used if the auth proxy is unspecified)'
     Type: String
     Default: '0.0.0.0/0'
+  ECRName:
+    Description: The name of the ECR repository.
+    Type: String
 Mappings:
   RegionMap:
     'eu-north-1':
@@ -2369,29 +2376,7 @@ Resources:
   FrontendDockerRegistry:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: springleaf/frontend
-      RepositoryPolicyText:
-        Version: "2012-10-17"
-        Statement:
-          -
-            Sid: AllowPushPull
-            Effect: Allow
-            Principal:
-              AWS:
-                - !GetAtt 'AgentIAMRole.Arn'
-            Action:
-              - 'ecr:BatchCheckLayerAvailability'
-              - 'ecr:BatchGetImage'
-              - 'ecr:CompleteLayerUpload'
-              - 'ecr:GetDownloadUrlForLayer'
-              - 'ecr:InitiateLayerUpload'
-              - 'ecr:PutImage'
-              - 'ecr:UploadLayerPart'
-  DeploymentDockerRegistry:
-    Type: AWS::ECR::Repository
-    DeletionPolicy: Retain
-    Properties:
-      RepositoryName: iloan/deploy/ansible
+      RepositoryName: !Ref ECRName
       RepositoryPolicyText:
         Version: "2012-10-17"
         Statement:
@@ -2444,8 +2429,8 @@ Outputs:
     Value: !GetAtt 'AgentIAMRole.Arn'
     Export:
       Name: !Sub '${AWS::StackName}-AgentIAMRole'
-  FrontendDockerRegistryName:
+  ECRName:
     Description: ''
-    Value: !Ref 'FrontendDockerRegistry'
+    Value: !Ref 'ECRName'
     Export:
-      Name: !Sub '${AWS::StackName}-FrontendDockerRegistry'
+      Name: !Sub '${AWS::StackName}-ECRName'
