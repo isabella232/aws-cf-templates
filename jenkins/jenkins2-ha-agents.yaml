@@ -71,6 +71,11 @@ Metadata:
         default: 'ECR'
       Parameters:
       - ECRName
+    - Label:
+        default: 'Domain parameters'
+      Parameters:
+      - DomainName
+      - FullDomainName
 Parameters:
   ParentVPCStack:
     Description: 'Stack name of parent VPC stack based on vpc/vpc-*azs.yaml template.'
@@ -237,6 +242,16 @@ Parameters:
   ECRName:
     Description: The name of the ECR repository.
     Type: String
+  DomainName:
+    Type: String
+    Description: 'The domain of the Route53 hosted zone'
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: 'Must be a valid DNS zone name (e.g.: example.org)'
+  FullDomainName:
+    Type: String
+    Description: 'The full domain name (e.g.: jenkins.example.org)'
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: 'Must be a valid DNS zone name.'
 Mappings:
   RegionMap:
     'eu-north-1':
@@ -2372,7 +2387,7 @@ Resources:
         Resources:
         - !Sub 'arn:${AWS::Partition}:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:file-system/${MasterStorage}'
         SelectionName: !Ref 'AWS::StackName'
-  FrontendDockerRegistry:
+  DockerImageRegistry:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Ref ECRName
@@ -2393,6 +2408,15 @@ Resources:
               - 'ecr:InitiateLayerUpload'
               - 'ecr:PutImage'
               - 'ecr:UploadLayerPart'
+  WebsiteDNSName:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt 'MasterELB.DNSName'
+        HostedZoneId: !GetAtt 'MasterELB.CanonicalHostedZoneID'
+      HostedZoneName: !Join ['', [!Ref 'DomainName', '.']]
+      Name: !Ref 'FullDomainName'
+      Type: A
 Outputs:
   TemplateID:
     Description: 'cloudonaut.io template id.'
