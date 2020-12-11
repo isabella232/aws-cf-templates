@@ -543,7 +543,6 @@ Resources:
       Protocol: HTTP
   MasterELBListenerHTTPS:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
-    DeletionPolicy: Retain
     Properties:
       DefaultActions:
       - TargetGroupArn: !Ref MasterELBTargetGroup
@@ -2430,7 +2429,7 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-AgentIAMRole'
   ECRName:
-    Description: ''
+    Description: 'Name of ECR'
     Value: !Ref 'ECRName'
     Export:
       Name: !Sub '${AWS::StackName}-ECRName'
