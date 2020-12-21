@@ -37,12 +37,12 @@ Resources:
   SubnetAPrivatePeeringRoute:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: {'Fn::ImportValue': !Sub '${ParentVPCStack}-SubnetAPrivate'}
+      RouteTableId: {'Fn::ImportValue': !Sub '${ParentVPCStack}-RouteTableAPrivate'}
       DestinationCidrBlock: !Ref VPCPeeringCIDR
       VpcPeeringConnectionId: !Ref VPCPeeringConnectionId
   SubnetBPrivatePeeringRoute:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: {'Fn::ImportValue': !Sub '${ParentVPCStack}-SubnetBPrivate'}
+      RouteTableId: {'Fn::ImportValue': !Sub '${ParentVPCStack}-RouteTableBPrivate'}
       DestinationCidrBlock: !Ref VPCPeeringCIDR
       VpcPeeringConnectionId: !Ref VPCPeeringConnectionId
